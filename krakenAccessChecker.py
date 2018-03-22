@@ -56,7 +56,7 @@ def main(filename, vendor):
     columns = get_columns()
     rows= get_rows(filename)
     output = csv.writer(open('accessCheckerResults.csv', "w", newline=''))
-    num_lines = len(open(filename).read().splitlines())
+    num_lines = len(rows)
     output_header = ["Vendor"] + columns + ["Have Access?"]
     output.writerow(output_header)
     for index, row in enumerate(rows):
@@ -290,7 +290,7 @@ def wiley(url):
         return "Look into this . . . "
 # Run it!
 if __name__ == "__main__":
-    if sys.argv[1] and sys.argv[1] == "vendors":
+    if len(sys.argv) > 1 and sys.argv[1] == "vendors":
         methods = list(globals())
         main_ind =  methods.index('main')
         for vendor in methods[main_ind+1:]:
