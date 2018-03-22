@@ -1,0 +1,18 @@
+Columns:
+  Title: true
+  ISSN/ISBN: true
+  Type: true
+  Status: true
+  Default Dates: true
+  Custom Date From: true
+  Custom Date To: true
+  Title Id: false
+  Publication Date: false
+  Edition: true
+  Publisher: true
+  Public Note: true
+  Display Public Note: false
+  Location Note: true
+  Display Location Note: true
+  Default URL: true
+  Custom URL: true
