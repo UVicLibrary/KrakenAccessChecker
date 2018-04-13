@@ -43,8 +43,9 @@ def get_rows(filename):
         f = open(filename,'rU')
         reader=csv.reader((line.replace('\0','') for line in f),delimiter='\t')
         for _ in range(28):
-            next(reader) # skip (**) headings
-    header = next(reader)
+            header = next(reader) #skip (**) lines
+            if (len(header) > 1) and (header[0] == "Title"): break
+    if len(header) == 0: header = next(reader) # to account for weird case where an extra blank line exists in the txt file.
     rows = [dict(zip(header, map(str, row))) for row in reader]
     f.close()
     for index,row in enumerate(rows):
