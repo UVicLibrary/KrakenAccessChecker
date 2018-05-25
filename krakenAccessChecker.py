@@ -22,8 +22,14 @@ import re
 import requests 
 from selenium import webdriver
 import yaml
+import time
 
-
+def url_check(url):
+    if url == "title_url":
+        return "Default URL"
+    else:
+        return url
+            
 def get_columns():
     yml = open('AccessCheckerSettings.yml', 'r')
     settings = yaml.load(yml)
@@ -44,8 +50,9 @@ def get_rows(filename):
         reader=csv.reader((line.replace('\0','') for line in f),delimiter='\t')
         for _ in range(28):
             header = next(reader) #skip (**) lines
-            if (len(header) > 1) and (header[0] == "Title"): break
+            if (len(header) > 1) and ("itle" in header[0]): break
     if len(header) == 0: header = next(reader) # to account for weird case where an extra blank line exists in the txt file.
+    header=list(map(url_check, header))
     rows = [dict(zip(header, map(str, row))) for row in reader]
     f.close()
     for index,row in enumerate(rows):
@@ -229,6 +236,7 @@ def nfb(url):
 
 #cannot get oxford to work? OCt 2017/PP
 def oxford(url):
+    time.sleep(5)
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'lxml')	
     if soup.find_all(text = re.compile("availabilityIcon unlocked")):
@@ -264,29 +272,32 @@ def tandf(url):
         return "Nope!"
     else: 
         return "Look into this . . . "
-        
- #wiley updated Feb 2018/PP      
+           
+ #wiley updated May 2018/PP      
 def wiley(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'lxml')
-    if soup.find_all(text = re.compile("You have full text access to this content")):
+    if soup.find_all(text = re.compile("full access")):
         return "Right On!" 
-    elif soup.find_all(text = re.compile("Page not found")):
+    elif soup.find_all(text = re.compile("Full access")):
+        return "Right on!"
+    elif soup.find_all(text = re.compile("We're sorry, the page you've requested does not exist at this address")):
         return "Page not found"
-    elif soup.find_all(text = re.compile("RMetS")):
-        return "Royal Meteorological Society"
-    elif soup.find_all(text = re.compile("AGU Publications")):
-        return "AGU Publications"
-    elif soup.find_all(text = re.compile("American Anthropological Association")):
-        return "American Anthropological Association"
+    elif soup.find_all(text = re.compile("Hindawi")):
+        return "Hindawi open access"
+    elif soup.find_all(text = re.compile("Open access")):
+        return "Open access"
+    elif soup.find_all(text = re.compile("Birth Defects Research")):
+        return "Journal merge Birth Defects Research"
+
     elif soup.find_all(text = re.compile("You have free access to this content")):
         return "Free Access"
-    elif soup.find_all(text = re.compile("BES Society Header")):
-        return "british ecological society"
-    elif soup.find_all(text = re.compile("Hub Branding")):
-        return "Powered by Wiley"
-    elif soup.find_all(text = re.compile("You have full text access to this Open Access content")):
-        return "Open Access"
+    elif soup.find_all(text = re.compile("This journal is now published as")):
+        return "Change of title"
+    elif soup.find_all(text = re.compile("Open Access")):
+        return "Open access"
+    elif soup.find_all(text = re.compile("free access")):
+        return "Free Access"
     else: 
         return "Look into this . . . "
 # Run it!
